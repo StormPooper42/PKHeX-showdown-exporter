@@ -1,0 +1,16 @@
+{
+  "terminal.integrated.profiles.windows": {
+    "PKHeX PowerShell": {
+      "path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+      "args": [
+        "-NoExit",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "${workspaceFolder}\\dev-env.ps1"
+      ],
+      "overrideName": true
+    }
+  },
+  "terminal.integrated.defaultProfile.windows": "PKHeX PowerShell"
+}
