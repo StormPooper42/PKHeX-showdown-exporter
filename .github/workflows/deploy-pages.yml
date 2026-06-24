@@ -1,0 +1,68 @@
+name: Deploy GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.201'
+
+      - name: Restore
+        run: dotnet restore src/PKHeX.ShowdownExporter.Web/PKHeX.ShowdownExporter.Web.csproj
+
+      - name: Publish
+        run: dotnet publish src/PKHeX.ShowdownExporter.Web/PKHeX.ShowdownExporter.Web.csproj -c Release -o publish
+
+      - name: Set base href for GitHub Pages
+        run: |
+          sed -i 's#<base href="/" />#<base href="/${{ github.event.repository.name }}/" />#' publish/wwwroot/index.html
+
+      - name: Add .nojekyll
+        run: touch publish/wwwroot/.nojekyll
+
+      - name: Add SPA fallback
+        run: cp publish/wwwroot/index.html publish/wwwroot/404.html
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: publish/wwwroot
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
