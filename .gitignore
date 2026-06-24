@@ -405,3 +405,20 @@ FodyWeavers.xsd
 
 # PKHeX.Web
 plugins/
+
+# Pokémon save/test files
+*.sav
+*.dsv
+*.dat
+*.bin
+*.gci
+*.main
+*.pk*
+*.ek*
+
+# Exported output
+*pokemon-showdown*.txt
+*showdown-export*.txt
+
+# Portable local .NET SDK, if used
+.dotnet/
