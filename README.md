@@ -1,27 +1,35 @@
-# PKHeX Everywhere
+# Pokémon Showdown Exporter
 
-This repository offers 2 different ways of accessing PKHex features in any operating system: a web-based version and a terminal-based version compiled to all major operating systems (macOS, Linux and Windows).
+A small client-side web tool that exports Pokémon from a save file to Pokémon Showdown format.
 
-## PKHeX.Web
-The PKHeX Web version ([pkhex-web.github.io](https://pkhex-web.github.io)) provides a user-friendly interface accessible via any web browser.
+## Privacy
 
-![](./docs/pkhex-web-demo.gif)
+This tool runs entirely in your browser.
 
-This version allows you to manage your party, pokemon box, items, and custom actions through plug-ins, like auto-legality mode, helpers for nuzlocking or live running your save file in a browser-based emulator fully integrated with the app. To learn more check the [wiki](https://github.com/arleypadua/PKHeX.Everywhere/wiki).
+Your save file is:
+- not uploaded;
+- not stored;
+- not sent to any backend;
+- only read locally by your browser.
 
-## PKHeX.CLI
-The PKHeX Command Line Interface (CLI) version allows users to interact with PKHeX via the terminal. It provides a streamlined way to use PKHeX features directly from the command line.
+The generated Showdown text is kept in memory until you copy or download it.
 
-![](./docs/pkhex-cli-demo.gif)
+## Usage
 
-### Installation Methods:
-1. **Curl Script**:
-   ```sh
-   curl -sL https://raw.githubusercontent.com/arleypadua/PKHeX.Everywhere/main/install.sh | sudo bash
-   ```
-2. **Homebrew**:
-   ```sh
-   brew tap arleypadua/homebrew-pkhex-cli
-   brew install pkhex-cli
-   ```
-3. For more information, refer to the documentation [here](./src/PKHeX.CLI).
+1. Open the website.
+2. Select your Pokémon save file.
+3. Download the generated Showdown export.
+
+## Limitations
+
+- ROM hacks may not be fully supported if they change save structure, custom species, custom moves, abilities or items.
+- The tool is read-only and does not edit save files.
+
+## Development
+
+```bash
+git clone --recurse-submodules https://github.com/YOUR_USERNAME/YOUR_REPO.git
+cd YOUR_REPO
+dotnet restore
+dotnet run --project src/PKHeX.ShowdownExporter.Web/PKHeX.ShowdownExporter.Web.csproj
+```
