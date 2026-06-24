@@ -22,10 +22,15 @@
     </section>
 
     <section class="card">
-        <label class="file-label">
+        <label class="file-label" for="save-file">
             Save file
-            <InputFile OnChange="HandleFileSelected" />
         </label>
+
+        <p class="hint">
+            Select a compatible Pokémon save file. The export is generated locally in your browser.
+        </p>
+
+        <InputFile id="save-file" class="file-input" OnChange="HandleFileSelected" />
 
         @if (!string.IsNullOrWhiteSpace(_error))
         {
