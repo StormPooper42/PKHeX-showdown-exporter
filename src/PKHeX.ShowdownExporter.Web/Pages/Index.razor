@@ -1,0 +1,94 @@
+@page "/"
+@using Microsoft.AspNetCore.Components.Forms
+@using PKHeX.ShowdownExporter.Web.Services
+@inject ShowdownExportService ExportService
+@inject IJSRuntime JS
+
+<PageTitle>Pokémon Showdown Exporter</PageTitle>
+
+<main class="page">
+    <section class="header">
+        <h1>Pokémon Showdown Exporter</h1>
+
+        <p>
+            Select a Pokémon save file. The file is processed locally in your browser
+            and is not uploaded.
+        </p>
+    </section>
+
+    <section class="card">
+        <label class="file-label">
+            Save file
+            <InputFile OnChange="HandleFileSelected" />
+        </label>
+
+        @if (!string.IsNullOrWhiteSpace(_error))
+        {
+            <p class="error">@_error</p>
+        }
+
+        @if (_result is not null)
+        {
+            <div class="result-info">
+                <p>
+                    <strong>Game:</strong> @_result.GameName<br />
+                    <strong>Trainer:</strong> @_result.TrainerName<br />
+                    <strong>Pokémon exported:</strong> @_result.PokemonCount
+                </p>
+            </div>
+
+            <div class="actions">
+                <button @onclick="DownloadTxt">Download .txt</button>
+                <button @onclick="CopyToClipboard">Copy</button>
+            </div>
+
+            <textarea readonly rows="24">@_result.ShowdownText</textarea>
+        }
+    </section>
+</main>
+
+@code {
+    private ExportResult? _result;
+    private string? _error;
+
+    private async Task HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        _error = null;
+        _result = null;
+
+        try
+        {
+            var file = e.File;
+
+            await using var stream = file.OpenReadStream(maxAllowedSize: 16 * 1024 * 1024);
+            using var ms = new MemoryStream();
+            await stream.CopyToAsync(ms);
+
+            _result = ExportService.Export(ms.ToArray(), file.Name);
+        }
+        catch (Exception ex)
+        {
+            _error = $"Could not export this save file: {ex.Message}";
+        }
+    }
+
+    private async Task DownloadTxt()
+    {
+        if (_result is null)
+            return;
+
+        await JS.InvokeVoidAsync(
+            "downloadTextFile",
+            "pokemon-showdown-export.txt",
+            _result.ShowdownText
+        );
+    }
+
+    private async Task CopyToClipboard()
+    {
+        if (_result is null)
+            return;
+
+        await JS.InvokeVoidAsync("navigator.clipboard.writeText", _result.ShowdownText);
+    }
+}
